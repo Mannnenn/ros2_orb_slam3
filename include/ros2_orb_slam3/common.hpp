@@ -22,7 +22,6 @@
 
 // #include "your_custom_msg_interface/msg/custom_msg_field.hpp" // Example of adding in a custom message
 #include <std_msgs/msg/header.hpp>
-#include "std_msgs/msg/float64.hpp"
 #include <std_msgs/msg/string.hpp>
 #include <std_msgs/msg/bool.hpp>
 #include "sensor_msgs/msg/image.hpp"
@@ -84,7 +83,8 @@ private:
     rclcpp::Subscription<std_msgs::msg::String>::SharedPtr expConfig_subscription_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr configAck_publisher_;
     rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr subImgMsg_subscription_;
-    rclcpp::Subscription<std_msgs::msg::Float64>::SharedPtr subTimestepMsg_subscription_;
+
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pose_pub_;
 
     //* ORB_SLAM3 related variables
     ORB_SLAM3::System *pAgent; // pointer to a ORB SLAM3 object
@@ -94,7 +94,6 @@ private:
 
     //* ROS callbacks
     void experimentSetting_callback(const std_msgs::msg::String &msg); // Callback to process settings sent over by Python node
-    void Timestep_callback(const std_msgs::msg::Float64 &time_msg);    // Callback to process the timestep for this image
     void Img_callback(const sensor_msgs::msg::Image &msg);             // Callback to process RGB image and semantic matrix sent by Python node
 
     //* Helper functions

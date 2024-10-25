@@ -66,7 +66,6 @@ MonocularMode::MonocularMode() : Node("mono_node_cpp")
     subexperimentconfigName = "/mono_py_driver/experiment_settings"; // topic that sends out some configuration parameters to the cpp ndoe
     pubconfigackName = "/mono_py_driver/exp_settings_ack";           // send an acknowledgement to the python node
     subImgMsgName = "/mono_py_driver/img_msg";                       // topic to receive RGB image messages
-    subTimestepMsgName = "/mono_py_driver/timestep_msg";             // topic to receive RGB image messages
 
     //* subscribe to python node to receive settings
     expConfig_subscription_ = this->create_subscription<std_msgs::msg::String>(subexperimentconfigName, 1, std::bind(&MonocularMode::experimentSetting_callback, this, _1));
@@ -76,9 +75,6 @@ MonocularMode::MonocularMode() : Node("mono_node_cpp")
 
     //* subscrbite to the image messages coming from the Python driver node
     subImgMsg_subscription_ = this->create_subscription<sensor_msgs::msg::Image>(subImgMsgName, 1, std::bind(&MonocularMode::Img_callback, this, _1));
-
-    //* subscribe to receive the timestep
-    subTimestepMsg_subscription_ = this->create_subscription<std_msgs::msg::Float64>(subTimestepMsgName, 1, std::bind(&MonocularMode::Timestep_callback, this, _1));
 
     pose_pub_ = this->create_publisher<geometry_msgs::msg::PoseStamped>("/mono_py_driver/pose", 100);
 
@@ -146,13 +142,6 @@ void MonocularMode::initializeVSLAM(std::string &configString)
     std::cout << "MonocularMode node initialized" << std::endl; // TODO needs a better message
 }
 
-//* Callback that processes timestep sent over ROS
-void MonocularMode::Timestep_callback(const std_msgs::msg::Float64 &time_msg)
-{
-    // timeStep = 0; // Initialize
-    timeStep = time_msg.data;
-}
-
 //* Callback to process image message and run SLAM node
 void MonocularMode::Img_callback(const sensor_msgs::msg::Image &msg)
 {
@@ -164,6 +153,7 @@ void MonocularMode::Img_callback(const sensor_msgs::msg::Image &msg)
     {
         // cv::Mat im =  cv_bridge::toCvShare(msg.img, msg)->image;
         cv_ptr = cv_bridge::toCvCopy(msg); // Local scope
+        timeStep = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9;
 
         // DEBUGGING, Show image
         // Update GUI Window
