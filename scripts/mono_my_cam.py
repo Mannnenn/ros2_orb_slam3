@@ -57,7 +57,7 @@ class MonoDriver(Node):
         super().__init__(node_name) # Initializes the rclpy.Node class. It expects the name of the node
 
         # Initialize parameters to be passed from the command line (or launch file)
-        self.declare_parameter("settings_name","EuRoC")
+        self.declare_parameter("settings_name","MyCam")
 
         #* Parse values sent by command line
         self.settings_name = str(self.get_parameter('settings_name').value) 

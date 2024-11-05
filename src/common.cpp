@@ -151,6 +151,7 @@ void MonocularMode::Img_callback(const sensor_msgs::msg::Image &msg)
     //* Convert ROS image to openCV image
     try
     {
+        // TODO: カメラの入力がRGB8でない場合の処理を追加
         // cv::Mat im =  cv_bridge::toCvShare(msg.img, msg)->image;
         cv_ptr = cv_bridge::toCvCopy(msg); // Local scope
         timeStep = msg.header.stamp.sec + msg.header.stamp.nanosec * 1e-9;
@@ -175,7 +176,7 @@ void MonocularMode::Img_callback(const sensor_msgs::msg::Image &msg)
     // ポーズをROSメッセージに変換
     auto pose_msg = geometry_msgs::msg::PoseStamped();
     pose_msg.header.stamp = this->now();
-    pose_msg.header.frame_id = "map";
+    pose_msg.header.frame_id = "cam_link";
     pose_msg.pose.position.x = Tcw.translation().x();
     pose_msg.pose.position.y = Tcw.translation().y();
     pose_msg.pose.position.z = Tcw.translation().z();
